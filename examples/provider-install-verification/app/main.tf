@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     kubernetes = {
-      source = "hashicorp/kubernetes"
+      source  = "hashicorp/kubernetes"
       version = ">=2.23.0"
     }
   }
@@ -10,11 +10,11 @@ terraform {
 variable "kubeconfig_location" {
   description = "Kubeconfig location to use"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 provider "kubernetes" {
-  config_path    = "${var.kubeconfig_location}"
+  config_path = var.kubeconfig_location
 }
 
 resource "kubernetes_namespace" "example" {

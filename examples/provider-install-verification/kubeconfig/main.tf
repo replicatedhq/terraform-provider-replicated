@@ -13,10 +13,10 @@ provider "local" {
 variable "kubeconfig" {
   description = "Kubeconfig to use"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 resource "local_sensitive_file" "kubeconfig" {
-    content  = "${var.kubeconfig}"
-    filename = "/tmp/config"
+  content  = var.kubeconfig
+  filename = "/tmp/config"
 }
