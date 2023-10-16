@@ -1,3 +1,3 @@
-provider "scaffolding" {
+provider "replicated" {
   # example configuration here
 }
