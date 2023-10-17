@@ -19,6 +19,8 @@ import (
 var _ resource.Resource = &ClusterResource{}
 var _ resource.ResourceWithImportState = &ClusterResource{}
 
+var ClusterNotFound = fmt.Errorf("Not found")
+
 func NewClusterResource() resource.Resource {
 	return &ClusterResource{}
 }
@@ -228,7 +230,11 @@ func (r *ClusterResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	cl, err := r.client.GetCluster(data.Id.ValueString())
 	if err != nil {
-		resp.State.RemoveResource(ctx)
+		if err.Error() == ClusterNotFound.Error() {
+			resp.State.RemoveResource(ctx)
+			return
+		}
+		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to get cluster, got error: %s", err))
 		return
 	}
 
