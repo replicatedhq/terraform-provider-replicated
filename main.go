@@ -5,8 +5,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/hashicorp/terraform-provider-scaffolding/internal/provider"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
+	"github.com/replicatedhq/terraform-provider-replicated/internal/provider"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
@@ -21,29 +21,27 @@ import (
 
 var (
 	// these will be set by the goreleaser configuration
-	// to appropriate values for the compiled binary
+	// to appropriate values for the compiled binary.
 	version string = "dev"
 
-	// goreleaser can also pass the specific commit if you want
-	// commit  string = ""
+	// goreleaser can pass other information to the main package, such as the specific commit
+	// https://goreleaser.com/cookbooks/using-main.version/
 )
 
 func main() {
-	var debugMode bool
+	var debug bool
 
-	flag.BoolVar(&debugMode, "debug", false, "set to true to run the provider with support for debuggers like delve")
+	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
 	flag.Parse()
 
-	opts := &plugin.ServeOpts{ProviderFunc: provider.New(version)}
-
-	if debugMode {
-		// TODO: update this string with the full name of your provider as used in your configs
-		err := plugin.Debug(context.Background(), "registry.terraform.io/hashicorp/scaffolding", opts)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		return
+	opts := providerserver.ServeOpts{
+		Address: "registry.terraform.io/replicated/replicated",
+		Debug:   debug,
 	}
 
-	plugin.Serve(opts)
+	err := providerserver.Serve(context.Background(), provider.New(version), opts)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
