@@ -1,6 +1,3 @@
-// Copyright (c) HashiCorp, Inc.
-// SPDX-License-Identifier: MPL-2.0
-
 package provider
 
 import (
@@ -94,7 +91,7 @@ func (p *ReplicatedProvider) Configure(ctx context.Context, req provider.Configu
 	httpClient := platformclient.NewHTTPClient(apiOrigin, apiToken)
 	kotsAPI := &kotsclient.VendorV3Client{HTTPClient: *httpClient}
 
-	// Example client configuration for data sources and resources
+	// VendorApi client configuration.
 	client := kotsAPI
 	resp.DataSourceData = client
 	resp.ResourceData = client
