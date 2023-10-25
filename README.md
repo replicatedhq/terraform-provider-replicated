@@ -1,5 +1,35 @@
 # Terraform Provider Replicated
 
+## Using the provider
+
+### Provider configuration
+
+```hcl
+terraform {
+  required_providers {
+    replicated = {
+      source = "registry.terraform.io/replicatedhq/replicated"
+    }
+  }
+}
+
+provider "replicated" {
+    api_token = "your api token"
+}
+
+```
+
+### Resource configuration
+
+```hcl
+resource "replicated_cluster" "tf_cluster" {
+  distribution  = "kind"
+  wait_duration = "10m"
+  ttl           = "30m"
+  instance_type = "r1.large"
+}
+```
+
 ## Requirements
 
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0
@@ -29,35 +59,6 @@ go mod tidy
 
 Then commit the changes to `go.mod` and `go.sum`.
 
-## Using the provider
-
-### Provider configuration
-
-```hcl
-terraform {
-  required_providers {
-    replicated = {
-      source = "registry.terraform.io/replicated/replicated"
-    }
-  }
-}
-
-provider "replicated" {
-    api_token = "your api token"
-}
-
-```
-
-### Resource configuration
-
-```hcl
-resource "replicated_cluster" "tf_cluster" {
-  distribution  = "kind"
-  wait_duration = "10m"
-  ttl           = "30m"
-  instance_type = "r1.large"
-}
-```
 
 ## Developing the Provider
 
