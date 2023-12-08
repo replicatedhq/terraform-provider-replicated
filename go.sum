@@ -167,8 +167,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
 github.com/posener/complete v1.2.3 h1:NP0eAhjcjImqslEwo/1hq7gpajME0fTLTezBKDqfXqo=
 github.com/posener/complete v1.2.3/go.mod h1:WZIdtGGp+qx0sLrYKtIRAruyNpv6hFCicSgv7Sy7s/s=
-github.com/replicatedhq/replicated v0.59.5 h1:UsOpDUN1zqFka1hK+TXvgILOFDGYWvWm3p1aPktxhcQ=
-github.com/replicatedhq/replicated v0.59.5/go.mod h1:vck429c95AH0gGRGn3X9LzdvjKXtdwVvYVbLZL3No78=
+github.com/replicatedhq/replicated v0.59.9 h1:/gzA3R9mKVkhGuwKuv2GLA4PmBPLYlGz2KqmLxxpc4Q=
+github.com/replicatedhq/replicated v0.59.9/go.mod h1:vck429c95AH0gGRGn3X9LzdvjKXtdwVvYVbLZL3No78=
 github.com/rogpeppe/go-internal v1.9.0 h1:73kH8U+JUqXU8lRuOHeVHaa/SZPifC7BkcraZVejAe8=
 github.com/russross/blackfriday v1.6.0 h1:KqfZb0pUVN2lYqZUYRddxF4OR8ZMURnJIG5Y3VRLtww=
 github.com/russross/blackfriday v1.6.0/go.mod h1:ti0ldHuxg49ri4ksnFxlkCfN+hvslNlmVHqNRXXJNAY=
