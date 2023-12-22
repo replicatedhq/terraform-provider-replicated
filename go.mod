@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.5.1
 	github.com/pkg/errors v0.9.1
-	github.com/replicatedhq/replicated v0.59.5
+	github.com/replicatedhq/replicated v0.62.0
 )
 
 require (
