@@ -19,7 +19,7 @@ import (
 var _ resource.Resource = &ClusterResource{}
 var _ resource.ResourceWithImportState = &ClusterResource{}
 
-var ClusterNotFound = fmt.Errorf("Not found")
+var ErrClusterNotFound = fmt.Errorf("Not found")
 
 func NewClusterResource() resource.Resource {
 	return &ClusterResource{}
@@ -107,7 +107,7 @@ func (r *ClusterResource) Configure(ctx context.Context, req resource.ConfigureR
 		return
 	}
 
-	client, ok := req.ProviderData.(*kotsclient.VendorV3Client)
+	client, ok := req.ProviderData.(*ReplicatedProviderClients)
 
 	if !ok {
 		resp.Diagnostics.AddError(
@@ -118,7 +118,7 @@ func (r *ClusterResource) Configure(ctx context.Context, req resource.ConfigureR
 		return
 	}
 
-	r.client = client
+	r.client = &client.kotsVendorV3Client
 }
 
 func (r *ClusterResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -230,7 +230,7 @@ func (r *ClusterResource) Read(ctx context.Context, req resource.ReadRequest, re
 
 	cl, err := r.client.GetCluster(data.Id.ValueString())
 	if err != nil {
-		if err.Error() == ClusterNotFound.Error() {
+		if err.Error() == ErrClusterNotFound.Error() {
 			resp.State.RemoveResource(ctx)
 			return
 		}
