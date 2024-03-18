@@ -111,9 +111,8 @@ func (r *ClusterResource) Configure(ctx context.Context, req resource.ConfigureR
 
 	if !ok {
 		resp.Diagnostics.AddError(
-			// "Unexpected Resource Configure Type",
+			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *kotsclient.VendorV3Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
-			"a",
 		)
 
 		return
