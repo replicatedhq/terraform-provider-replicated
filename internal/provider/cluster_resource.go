@@ -74,6 +74,7 @@ func (r *ClusterResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"instance_type": schema.StringAttribute{
 				MarkdownDescription: "The type of instance to use (e.g. m6i.large)",
 				Optional:            true,
+				Computed:            true,
 			},
 			"disk": schema.Int64Attribute{
 				MarkdownDescription: "Disk Size (GiB) to request per node (default 50)",
