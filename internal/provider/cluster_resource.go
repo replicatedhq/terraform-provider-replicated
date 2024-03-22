@@ -190,8 +190,13 @@ func (r *ClusterResource) Create(ctx context.Context, req resource.CreateRequest
 	data.Id = types.StringValue(cl.ID)
 	data.Name = types.StringValue(cl.Name)
 	data.Version = types.StringValue(cl.KubernetesVersion)
-	data.Disk = types.Int64Value(cl.DiskGiB)
-	data.Nodes = types.Int64Value(int64(cl.NodeCount))
+
+	// TODO support multiple node groups
+	if cl.NodeGroups != nil && len(cl.NodeGroups) > 0 {
+		data.Disk = types.Int64Value(cl.NodeGroups[0].DiskGiB)
+		data.Nodes = types.Int64Value(int64(cl.NodeGroups[0].NodeCount))
+		data.InstanceType = types.StringValue(cl.NodeGroups[0].InstanceType)
+	}
 
 	tflog.Trace(ctx, "created a cluster")
 
@@ -243,8 +248,13 @@ func (r *ClusterResource) Read(ctx context.Context, req resource.ReadRequest, re
 	data.Name = types.StringValue(cl.Name)
 	data.Distribution = types.StringValue(cl.KubernetesDistribution)
 	data.Version = types.StringValue(cl.KubernetesVersion)
-	data.Disk = types.Int64Value(cl.DiskGiB)
-	data.Nodes = types.Int64Value(int64(cl.NodeCount))
+
+	// TODO support multiple node groups
+	if cl.NodeGroups != nil && len(cl.NodeGroups) > 0 {
+		data.Disk = types.Int64Value(cl.NodeGroups[0].DiskGiB)
+		data.Nodes = types.Int64Value(int64(cl.NodeGroups[0].NodeCount))
+		data.InstanceType = types.StringValue(cl.NodeGroups[0].InstanceType)
+	}
 
 	// if the cluster is running, get the kubeconfig
 	if cl.Status == rtypes.ClusterStatusRunning {
