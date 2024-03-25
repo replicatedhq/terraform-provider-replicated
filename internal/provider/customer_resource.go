@@ -324,7 +324,9 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 	opts.Name = updatedData.Name.ValueString()
 	opts.Type = updatedData.Type.ValueString()
 
-	err := r.client.UpdateCustomer(oldData.Id.ValueString(), opts)
+	customerId := strings.Split(oldData.Id.ValueString(), "/")[3]
+
+	err := r.client.UpdateCustomer(customerId, opts)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to update customer, got error: %s", err))
@@ -347,7 +349,8 @@ func (r *CustomerResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 
-	err := r.kotsClient.ArchiveCustomer(data.Id.ValueString())
+	customerId := strings.Split(data.Id.ValueString(), "/")[3]
+	err := r.kotsClient.ArchiveCustomer(customerId)
 	if err != nil {
 		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to archive customer, got error: %s", err))
 		return
