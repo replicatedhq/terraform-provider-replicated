@@ -185,10 +185,17 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
+	entitlementValuesMap := make(map[string]types.String, len(data.EntitlementValues.Elements()))
+	diags := data.EntitlementValues.ElementsAs(ctx, &entitlementValuesMap, false)
+	if diags.HasError() {
+		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to update customer, got error: %s", diags))
+		return
+	}
+
 	var entitlementValues []EntitlementValue
 
-	for name, value := range data.EntitlementValues.Elements() {
-		entitlementValues = append(entitlementValues, EntitlementValue{Name: name, Value: strings.Trim(value.String(), "\"")})
+	for name, value := range entitlementValuesMap {
+		entitlementValues = append(entitlementValues, EntitlementValue{Name: name, Value: value.ValueString()})
 	}
 
 	opts := CreateCustomerOpts{
@@ -301,8 +308,15 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 
 	var entitlementValues []EntitlementValue
 
-	for name, value := range updatedData.EntitlementValues.Elements() {
-		entitlementValues = append(entitlementValues, EntitlementValue{Name: name, Value: strings.Trim(value.String(), "\"")})
+	entitlementValuesMap := make(map[string]types.String, len(updatedData.EntitlementValues.Elements()))
+	diags := updatedData.EntitlementValues.ElementsAs(ctx, &entitlementValuesMap, false)
+	if diags.HasError() {
+		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to update customer, got error: %s", diags))
+		return
+	}
+
+	for name, value := range entitlementValuesMap {
+		entitlementValues = append(entitlementValues, EntitlementValue{Name: name, Value: value.ValueString()})
 	}
 
 	var opts UpdateCustomerOpts
