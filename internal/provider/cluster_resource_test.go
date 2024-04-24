@@ -7,14 +7,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccExampleResource(t *testing.T) {
+func TestAccClusterResource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccExampleResourceConfig("kind"),
+				Config: testAccClusterResourceConfig("kind"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("replicated_cluster.test", "distribution", "kind"),
 					resource.TestCheckResourceAttrSet("replicated_cluster.test", "version"),
@@ -29,7 +29,7 @@ func TestAccExampleResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccExampleResourceConfig("kind"),
+				Config: testAccClusterResourceConfig("kind"),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("replicated_cluster.test", "distribution", "kind"),
 				),
@@ -39,7 +39,7 @@ func TestAccExampleResource(t *testing.T) {
 	})
 }
 
-func testAccExampleResourceConfig(distribution string) string {
+func testAccClusterResourceConfig(distribution string) string {
 	return fmt.Sprintf(`
 resource "replicated_cluster" "test" {
   distribution = %[1]q

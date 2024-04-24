@@ -32,7 +32,6 @@ type ReplicatedProviderModel struct {
 
 type ReplicatedProviderClients struct {
 	kotsVendorV3Client kotsclient.VendorV3Client
-	customersAPIClient CustomersAPIClient
 }
 
 func (p *ReplicatedProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -95,11 +94,9 @@ func (p *ReplicatedProvider) Configure(ctx context.Context, req provider.Configu
 
 	httpClient := platformclient.NewHTTPClient(apiOrigin, apiToken)
 	kotsAPI := &kotsclient.VendorV3Client{HTTPClient: *httpClient}
-	customersAPIClient := NewCustomersAPIClient(apiToken)
 
 	clients := ReplicatedProviderClients{
 		kotsVendorV3Client: *kotsAPI,
-		customersAPIClient: *customersAPIClient,
 	}
 
 	resp.DataSourceData = &clients

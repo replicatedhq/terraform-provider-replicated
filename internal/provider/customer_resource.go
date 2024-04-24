@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/replicatedhq/replicated/pkg/kotsclient"
+	rtypes "github.com/replicatedhq/replicated/pkg/types"
 )
 
 var _ resource.Resource = &CustomerResource{}
@@ -23,7 +24,6 @@ func NewCustomerResource() resource.Resource {
 }
 
 type CustomerResource struct {
-	client     *CustomersAPIClient
 	kotsClient *kotsclient.VendorV3Client
 }
 
@@ -118,7 +118,7 @@ func (r *CustomerResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: "Is installer support enabled for the customer license",
 				Optional:            true,
 				Computed:            true,
-				Default:             booldefault.StaticBool(false),
+				Default:             booldefault.StaticBool(true),
 			},
 			"is_kots_install_enabled": schema.BoolAttribute{
 				MarkdownDescription: "Is kots install enabled for the customer license",
@@ -172,7 +172,6 @@ func (r *CustomerResource) Configure(ctx context.Context, req resource.Configure
 		return
 	}
 
-	r.client = &clients.customersAPIClient
 	r.kotsClient = &clients.kotsVendorV3Client
 }
 
@@ -188,19 +187,19 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 	entitlementValuesMap := make(map[string]types.String, len(data.EntitlementValues.Elements()))
 	diags := data.EntitlementValues.ElementsAs(ctx, &entitlementValuesMap, false)
 	if diags.HasError() {
-		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to update customer, got error: %s", diags))
+		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to create customer, got error: %s", diags))
 		return
 	}
 
-	var entitlementValues []EntitlementValue
+	var entitlementValues []kotsclient.EntitlementValue
 
 	for name, value := range entitlementValuesMap {
-		entitlementValues = append(entitlementValues, EntitlementValue{Name: name, Value: value.ValueString()})
+		entitlementValues = append(entitlementValues, kotsclient.EntitlementValue{Name: name, Value: value.ValueString()})
 	}
 
-	opts := CreateCustomerOpts{
+	opts := kotsclient.CreateCustomerOpts{
 		AppID:                            data.AppId.ValueString(),
-		ChannelId:                        data.ChannelId.ValueString(),
+		ChannelID:                        data.ChannelId.ValueString(),
 		Email:                            data.Email.ValueString(),
 		EntitlementValues:                entitlementValues,
 		ExpiresAt:                        data.ExpiresAt.ValueString(),
@@ -215,10 +214,10 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 		IsSnapshotSupported:              data.IsSnapshotSupported.ValueBool(),
 		IsSupportBundleUploadEnabled:     data.IsSupportBundleUploadEnabled.ValueBool(),
 		Name:                             data.Name.ValueString(),
-		Type:                             data.Type.ValueString(),
+		LicenseType:                      data.Type.ValueString(),
 	}
 
-	customer, err := r.client.CreateCustomer(opts)
+	customer, err := r.kotsClient.CreateCustomer(opts)
 	if err != nil {
 		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to create customer, got error: %s", err))
 		return
@@ -228,7 +227,7 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	data.Id = types.StringValue(fmt.Sprintf("app/%s/customer/%s", customer.Customer.Channels[0].AppID, customer.Customer.ID))
+	data = getCustomerResourceModelFromCustomer(data.AppId.ValueString(), customer)
 
 	tflog.Trace(ctx, "created a customer")
 
@@ -236,8 +235,6 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 }
 
 func (r *CustomerResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
-	var data CustomerResourceModel
-
 	var resourceId string
 
 	resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("id"), &resourceId)...)
@@ -249,7 +246,7 @@ func (r *CustomerResource) Read(ctx context.Context, req resource.ReadRequest, r
 	appId := strings.Split(resourceId, "/")[1]
 	id := strings.Split(resourceId, "/")[3]
 
-	customer, err := r.client.GetCustomer(appId, id)
+	customer, err := r.kotsClient.GetCustomerByNameOrId(appId, id)
 	if err != nil {
 		if err.Error() == "Customer not found" {
 			resp.State.RemoveResource(ctx)
@@ -259,38 +256,7 @@ func (r *CustomerResource) Read(ctx context.Context, req resource.ReadRequest, r
 		return
 	}
 
-	entitlements := make(map[string]string)
-
-	for _, entitlement := range customer.Customer.Entitlements {
-		entitlements[entitlement.Name] = entitlement.Value
-	}
-
-	mapValue, diags := types.MapValueFrom(ctx, types.StringType, entitlements)
-
-	if diags.HasError() {
-		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to get customer, got error: %s", diags))
-		return
-	}
-
-	data.Id = types.StringValue(fmt.Sprintf("app/%s/customer/%s", customer.Customer.Channels[0].AppID, customer.Customer.ID))
-	data.AppId = types.StringValue(customer.Customer.Channels[0].AppID)
-	data.ChannelId = types.StringValue(customer.Customer.Channels[0].ID)
-	data.Email = types.StringValue(customer.Customer.Email)
-	data.EntitlementValues = mapValue
-	data.ExpiresAt = types.StringValue(customer.Customer.ExpiresAt)
-	data.IsAirgapEnabled = types.BoolValue(customer.Customer.Airgap)
-	data.IsEmbeddedClusterDownloadEnabled = types.BoolValue(customer.Customer.IsEmbeddedClusterDownloadEnabled)
-	data.IsGeoaxisSupported = types.BoolValue(customer.Customer.IsGeoaxisSupported)
-	data.IsHelmvmDownloadEnabled = types.BoolValue(customer.Customer.IsHelmVMDownloadEnabled)
-	data.IsIdentityServiceSupported = types.BoolValue(customer.Customer.IsIdentityServiceSupported)
-	data.IsInstallerSupportEnabled = types.BoolValue(customer.Customer.IsInstallerSupportEnabled)
-	data.IsKotsInstallEnabled = types.BoolValue(customer.Customer.IsKotsInstallEnabled)
-	data.IsSnapshotSupported = types.BoolValue(customer.Customer.IsSnapshotSupported)
-	data.IsSupportBundleUploadEnabled = types.BoolValue(customer.Customer.IsSupportBundleUploadEnabled)
-	data.IsGitopsSupported = types.BoolValue(customer.Customer.IsGitopsSupported)
-	data.Name = types.StringValue(customer.Customer.Name)
-	data.Type = types.StringValue(customer.Customer.Type)
-
+	data := getCustomerResourceModelFromCustomer(appId, customer)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
 
@@ -306,7 +272,7 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	var entitlementValues []EntitlementValue
+	var entitlementValues []kotsclient.EntitlementValue
 
 	entitlementValuesMap := make(map[string]types.String, len(updatedData.EntitlementValues.Elements()))
 	diags := updatedData.EntitlementValues.ElementsAs(ctx, &entitlementValuesMap, false)
@@ -316,13 +282,13 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	for name, value := range entitlementValuesMap {
-		entitlementValues = append(entitlementValues, EntitlementValue{Name: name, Value: value.ValueString()})
+		entitlementValues = append(entitlementValues, kotsclient.EntitlementValue{Name: name, Value: value.ValueString()})
 	}
 
-	var opts UpdateCustomerOpts
+	var opts kotsclient.UpdateCustomerOpts
 
 	opts.AppID = updatedData.AppId.ValueString()
-	opts.ChannelId = updatedData.ChannelId.ValueString()
+	opts.ChannelID = updatedData.ChannelId.ValueString()
 	opts.Email = updatedData.Email.ValueString()
 	opts.EntitlementValues = entitlementValues
 	opts.ExpiresAt = updatedData.ExpiresAt.ValueString()
@@ -336,18 +302,23 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 	opts.IsSnapshotSupported = updatedData.IsSnapshotSupported.ValueBool()
 	opts.IsSupportBundleUploadEnabled = updatedData.IsSupportBundleUploadEnabled.ValueBool()
 	opts.Name = updatedData.Name.ValueString()
-	opts.Type = updatedData.Type.ValueString()
+	opts.LicenseType = updatedData.Type.ValueString()
 
 	customerId := strings.Split(oldData.Id.ValueString(), "/")[3]
 
-	err := r.client.UpdateCustomer(customerId, opts)
+	customer, err := r.kotsClient.UpdateCustomer(customerId, opts)
 
 	if err != nil {
 		resp.Diagnostics.AddError("Server Error", fmt.Sprintf("Unable to update customer, got error: %s", err))
 		return
 	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	updatedData.Id = oldData.Id
+	updatedData = getCustomerResourceModelFromCustomer(updatedData.AppId.ValueString(), customer)
+
+	tflog.Trace(ctx, "updated a customer")
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &updatedData)...)
@@ -373,4 +344,35 @@ func (r *CustomerResource) Delete(ctx context.Context, req resource.DeleteReques
 
 func (r *CustomerResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+}
+
+func getCustomerResourceModelFromCustomer(appID string, customer *rtypes.Customer) CustomerResourceModel {
+	entitlements := make(map[string]string)
+
+	for _, entitlement := range customer.Entitlements {
+		entitlements[entitlement.Name] = entitlement.Value
+	}
+
+	entitlementValues, _ := types.MapValueFrom(context.Background(), types.StringType, entitlements)
+
+	return CustomerResourceModel{
+		Id:                               types.StringValue(fmt.Sprintf("app/%s/customer/%s", appID, customer.ID)),
+		AppId:                            types.StringValue(appID),
+		ChannelId:                        types.StringValue(customer.Channels[0].ID),
+		Email:                            types.StringValue(customer.Email),
+		EntitlementValues:                entitlementValues,
+		ExpiresAt:                        types.StringValue(customer.Expires.Format("2006-01-02T15:04:05Z")),
+		IsAirgapEnabled:                  types.BoolValue(customer.IsAirgapEnabled),
+		IsEmbeddedClusterDownloadEnabled: types.BoolValue(customer.IsEmbeddedClusterDownloadEnabled),
+		IsGeoaxisSupported:               types.BoolValue(customer.IsGeoaxisSupported),
+		IsGitopsSupported:                types.BoolValue(customer.IsGitopsSupported),
+		IsHelmvmDownloadEnabled:          types.BoolValue(customer.IsHelmVMDownloadEnabled),
+		IsIdentityServiceSupported:       types.BoolValue(customer.IsIdentityServiceSupported),
+		IsInstallerSupportEnabled:        types.BoolValue(customer.IsInstallerSupportEnabled),
+		IsKotsInstallEnabled:             types.BoolValue(customer.IsKotsInstallEnabled),
+		IsSnapshotSupported:              types.BoolValue(customer.IsSnapshotSupported),
+		IsSupportBundleUploadEnabled:     types.BoolValue(customer.IsSupportBundleUploadEnabled),
+		Name:                             types.StringValue(customer.Name),
+		Type:                             types.StringValue(customer.Type),
+	}
 }

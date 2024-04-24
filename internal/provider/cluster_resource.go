@@ -87,7 +87,7 @@ func (r *ClusterResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Computed:            true,
 			},
 			"ttl": schema.StringAttribute{
-				MarkdownDescription: "Cluster TTL (duration, max 48h",
+				MarkdownDescription: "Cluster TTL (duration, max 48h)",
 				Optional:            true,
 			},
 			"wait_duration": schema.StringAttribute{

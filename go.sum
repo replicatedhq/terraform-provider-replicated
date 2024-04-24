@@ -179,8 +179,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/posener/complete v1.2.3 h1:NP0eAhjcjImqslEwo/1hq7gpajME0fTLTezBKDqfXqo=
 github.com/posener/complete v1.2.3/go.mod h1:WZIdtGGp+qx0sLrYKtIRAruyNpv6hFCicSgv7Sy7s/s=
-github.com/replicatedhq/replicated v0.71.0 h1:Q79wjmk8hviCLjDWTL+ujfTNRtgrxVqeAba0rppiO70=
-github.com/replicatedhq/replicated v0.71.0/go.mod h1:jCH4McWJAbCskf6VhD86Nn6J7EMhdpD+AKnwI0TtvC8=
+github.com/replicatedhq/replicated v0.73.2 h1:AQtCq8zXUbuzfEa2WfZ2zVvb8vdMVber3zJIoS4SfS0=
+github.com/replicatedhq/replicated v0.73.2/go.mod h1:jCH4McWJAbCskf6VhD86Nn6J7EMhdpD+AKnwI0TtvC8=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.4.4 h1:8TfxU8dW6PdqD27gjM8MVNuicgxIjxpm4K7x4jp8sis=
 github.com/rivo/uniseg v0.4.4/go.mod h1:FN3SvrM+Zdj16jyLfmOkMNblXMcoc8DfTHruCPUcx88=
