@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	rtypes "github.com/replicatedhq/replicated/pkg/types"
+	"github.com/replicatedhq/replicated/pkg/util"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccCustomerResource(t *testing.T) {
@@ -52,4 +56,65 @@ func testAccCustomerResourceConfig(name string) string {
 			}
 		}
 	`, name)
+}
+
+func TestGetCustomerResourceModelFromCustomer(t *testing.T) {
+	expires, err := util.ParseTime("2025-01-30T15:04:05Z")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tests := []struct {
+		name                      string
+		appID                     string
+		customer                  *rtypes.Customer
+		wantCustomerResourceModel CustomerResourceModel
+	}{
+		{
+			name:  "customer with expires_at",
+			appID: "123456789012",
+			customer: &rtypes.Customer{
+				ID:   "test_id",
+				Name: "test_name",
+				Channels: []rtypes.Channel{
+					{
+						ID: "test_channel_id",
+					},
+				},
+				Expires: &util.Time{Time: expires},
+			},
+			wantCustomerResourceModel: CustomerResourceModel{
+				AppId:     types.StringValue("123456789012"),
+				Id:        types.StringValue("app/123456789012/customer/test_id"),
+				Name:      types.StringValue("test_name"),
+				ExpiresAt: types.StringValue("2025-01-30T15:04:05Z"),
+			},
+		},
+		{
+			name:  "customer without expires_at",
+			appID: "123456789012",
+			customer: &rtypes.Customer{
+				ID: "test_id",
+				Channels: []rtypes.Channel{
+					{
+						ID: "test_channel_id",
+					},
+				},
+				Name: "test_name",
+			},
+			wantCustomerResourceModel: CustomerResourceModel{
+				AppId: types.StringValue("123456789012"),
+				Id:    types.StringValue("app/123456789012/customer/test_id"),
+				Name:  types.StringValue("test_name"),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotCustomerResourceModel := getCustomerResourceModelFromCustomer(tt.appID, tt.customer)
+
+			assert.Equal(t, tt.wantCustomerResourceModel.AppId, gotCustomerResourceModel.AppId)
+			assert.Equal(t, tt.wantCustomerResourceModel.Id, gotCustomerResourceModel.Id)
+			assert.Equal(t, tt.wantCustomerResourceModel.Name, gotCustomerResourceModel.Name)
+		})
+	}
 }

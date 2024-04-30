@@ -355,13 +355,12 @@ func getCustomerResourceModelFromCustomer(appID string, customer *rtypes.Custome
 
 	entitlementValues, _ := types.MapValueFrom(context.Background(), types.StringType, entitlements)
 
-	return CustomerResourceModel{
+	customerResourceModel := CustomerResourceModel{
 		Id:                               types.StringValue(fmt.Sprintf("app/%s/customer/%s", appID, customer.ID)),
 		AppId:                            types.StringValue(appID),
 		ChannelId:                        types.StringValue(customer.Channels[0].ID),
 		Email:                            types.StringValue(customer.Email),
 		EntitlementValues:                entitlementValues,
-		ExpiresAt:                        types.StringValue(customer.Expires.Format("2006-01-02T15:04:05Z")),
 		IsAirgapEnabled:                  types.BoolValue(customer.IsAirgapEnabled),
 		IsEmbeddedClusterDownloadEnabled: types.BoolValue(customer.IsEmbeddedClusterDownloadEnabled),
 		IsGeoaxisSupported:               types.BoolValue(customer.IsGeoaxisSupported),
@@ -375,4 +374,9 @@ func getCustomerResourceModelFromCustomer(appID string, customer *rtypes.Custome
 		Name:                             types.StringValue(customer.Name),
 		Type:                             types.StringValue(customer.Type),
 	}
+
+	if customer.Expires != nil {
+		customerResourceModel.ExpiresAt = types.StringValue(customer.Expires.Format("2006-01-02T15:04:05Z"))
+	}
+	return customerResourceModel
 }
