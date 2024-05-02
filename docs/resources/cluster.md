@@ -25,7 +25,7 @@ Cluster resource
 - `instance_type` (String) The type of instance to use (e.g. m6i.large)
 - `name` (String) Cluster name (defaults to random name)
 - `nodes` (Number) Node count (default 1)
-- `ttl` (String) Cluster TTL (duration, max 48h
+- `ttl` (String) Cluster TTL (duration, max 48h)
 - `version` (String) Kubernetes version to provision (format is distribution dependent)
 - `wait_duration` (String) How long to wait for the cluster to be ready
 

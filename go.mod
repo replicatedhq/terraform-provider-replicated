@@ -11,7 +11,8 @@ require (
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.7.0
 	github.com/pkg/errors v0.9.1
-	github.com/replicatedhq/replicated v0.73.0
+	github.com/replicatedhq/replicated v0.73.2
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
@@ -29,6 +30,7 @@ require (
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
@@ -66,6 +68,7 @@ require (
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/posener/complete v1.2.3 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect

@@ -30,6 +30,10 @@ type ReplicatedProviderModel struct {
 	ApiToken types.String `tfsdk:"api_token"`
 }
 
+type ReplicatedProviderClients struct {
+	kotsVendorV3Client kotsclient.VendorV3Client
+}
+
 func (p *ReplicatedProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "replicated"
 	resp.Version = p.version
@@ -91,15 +95,18 @@ func (p *ReplicatedProvider) Configure(ctx context.Context, req provider.Configu
 	httpClient := platformclient.NewHTTPClient(apiOrigin, apiToken)
 	kotsAPI := &kotsclient.VendorV3Client{HTTPClient: *httpClient}
 
-	// VendorApi client configuration.
-	client := kotsAPI
-	resp.DataSourceData = client
-	resp.ResourceData = client
+	clients := ReplicatedProviderClients{
+		kotsVendorV3Client: *kotsAPI,
+	}
+
+	resp.DataSourceData = &clients
+	resp.ResourceData = &clients
 }
 
 func (p *ReplicatedProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewClusterResource,
+		NewCustomerResource,
 	}
 }
 
