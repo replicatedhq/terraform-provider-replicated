@@ -199,7 +199,6 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 
 	opts := kotsclient.CreateCustomerOpts{
 		AppID:                            data.AppId.ValueString(),
-		ChannelID:                        data.ChannelId.ValueString(),
 		Email:                            data.Email.ValueString(),
 		EntitlementValues:                entitlementValues,
 		ExpiresAt:                        data.ExpiresAt.ValueString(),
@@ -216,6 +215,13 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 		Name:                             data.Name.ValueString(),
 		LicenseType:                      data.Type.ValueString(),
 	}
+
+	channels := []kotsclient.CustomerChannel{
+		{
+			ID: data.ChannelId.ValueString(),
+		},
+	}
+	opts.Channels = channels
 
 	customer, err := r.kotsClient.CreateCustomer(opts)
 	if err != nil {
@@ -288,7 +294,11 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 	var opts kotsclient.UpdateCustomerOpts
 
 	opts.AppID = updatedData.AppId.ValueString()
-	opts.ChannelID = updatedData.ChannelId.ValueString()
+	opts.Channels = []kotsclient.CustomerChannel{
+		{
+			ID: updatedData.ChannelId.ValueString(),
+		},
+	}
 	opts.Email = updatedData.Email.ValueString()
 	opts.EntitlementValues = entitlementValues
 	opts.ExpiresAt = updatedData.ExpiresAt.ValueString()
