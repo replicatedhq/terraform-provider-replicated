@@ -38,7 +38,6 @@ type CustomerResourceModel struct {
 	IsEmbeddedClusterDownloadEnabled types.Bool   `tfsdk:"is_embedded_cluster_download_enabled"`
 	IsGeoaxisSupported               types.Bool   `tfsdk:"is_geoaxis_supported"`
 	IsGitopsSupported                types.Bool   `tfsdk:"is_gitops_supported"`
-	IsHelmvmDownloadEnabled          types.Bool   `tfsdk:"is_helmvm_download_enabled"`
 	IsIdentityServiceSupported       types.Bool   `tfsdk:"is_identity_service_supported"`
 	IsInstallerSupportEnabled        types.Bool   `tfsdk:"is_installer_support_enabled"`
 	IsKotsInstallEnabled             types.Bool   `tfsdk:"is_kots_install_enabled"`
@@ -206,7 +205,6 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 		IsEmbeddedClusterDownloadEnabled: data.IsEmbeddedClusterDownloadEnabled.ValueBool(),
 		IsGeoaxisSupported:               data.IsGeoaxisSupported.ValueBool(),
 		IsGitopsSupported:                data.IsGitopsSupported.ValueBool(),
-		IsHelmVMDownloadEnabled:          data.IsHelmvmDownloadEnabled.ValueBool(),
 		IsIdentityServiceSupported:       data.IsIdentityServiceSupported.ValueBool(),
 		IsInstallerSupportEnabled:        data.IsInstallerSupportEnabled.ValueBool(),
 		IsKotsInstallEnabled:             data.IsKotsInstallEnabled.ValueBool(),
@@ -308,7 +306,6 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 	opts.IsEmbeddedClusterDownloadEnabled = updatedData.IsEmbeddedClusterDownloadEnabled.ValueBool()
 	opts.IsGeoaxisSupported = updatedData.IsGeoaxisSupported.ValueBool()
 	opts.IsGitopsSupported = updatedData.IsGitopsSupported.ValueBool()
-	opts.IsHelmVMDownloadEnabled = updatedData.IsHelmvmDownloadEnabled.ValueBool()
 	opts.IsIdentityServiceSupported = updatedData.IsIdentityServiceSupported.ValueBool()
 	opts.IsKotsInstallEnabled = updatedData.IsKotsInstallEnabled.ValueBool()
 	opts.IsSnapshotSupported = updatedData.IsSnapshotSupported.ValueBool()
@@ -377,7 +374,6 @@ func getCustomerResourceModelFromCustomer(appID string, customer *rtypes.Custome
 		IsEmbeddedClusterDownloadEnabled: types.BoolValue(customer.IsEmbeddedClusterDownloadEnabled),
 		IsGeoaxisSupported:               types.BoolValue(customer.IsGeoaxisSupported),
 		IsGitopsSupported:                types.BoolValue(customer.IsGitopsSupported),
-		IsHelmvmDownloadEnabled:          types.BoolValue(customer.IsHelmVMDownloadEnabled),
 		IsIdentityServiceSupported:       types.BoolValue(customer.IsIdentityServiceSupported),
 		IsInstallerSupportEnabled:        types.BoolValue(customer.IsInstallerSupportEnabled),
 		IsKotsInstallEnabled:             types.BoolValue(customer.IsKotsInstallEnabled),
