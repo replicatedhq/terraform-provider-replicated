@@ -50,7 +50,6 @@ func testAccCustomerResourceConfig(name string) string {
 			channel_id                 = "2fvVIfi3WTTAt3GpiKP8Fz86WuA"
 			expires_at                 = "2025-01-30T15:04:05Z"
 			is_kots_install_enabled    = true
-			is_helmvm_download_enabled = true
 
 			entitlement_values = {
 				testEntitlement	= "test_value"
