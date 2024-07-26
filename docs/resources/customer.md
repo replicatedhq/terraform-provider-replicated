@@ -30,7 +30,6 @@ Customer resource
 - `is_embedded_cluster_download_enabled` (Boolean) Is embedded cluster download enabled for the customer license
 - `is_geoaxis_supported` (Boolean) Is geoaxis supported for the customer license
 - `is_gitops_supported` (Boolean) Is gitops supported for the customer license
-- `is_helmvm_download_enabled` (Boolean) Is helmvm download enabled for the customer license
 - `is_identity_service_supported` (Boolean) Is identity service supported for the customer license
 - `is_installer_support_enabled` (Boolean) Is installer support enabled for the customer license
 - `is_kots_install_enabled` (Boolean) Is kots install enabled for the customer license

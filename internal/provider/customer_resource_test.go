@@ -44,12 +44,12 @@ func TestAccCustomerResource(t *testing.T) {
 func testAccCustomerResourceConfig(name string) string {
 	return fmt.Sprintf(`
 		resource "replicated_customer" "test" {
-			name                    = %[1]q
-			email                   = "test_resource@mm.mm"
-			app_id                  = "2fvVIbMQtNBwMzeTJt2yJrEKEFN"
-			channel_id              = "2fvVIfi3WTTAt3GpiKP8Fz86WuA"
-			expires_at              = "2025-01-30T15:04:05Z"
-			is_kots_install_enabled = true
+			name                       = %[1]q
+			email                      = "test_resource@mm.mm"
+			app_id                     = "2fvVIbMQtNBwMzeTJt2yJrEKEFN"
+			channel_id                 = "2fvVIfi3WTTAt3GpiKP8Fz86WuA"
+			expires_at                 = "2025-01-30T15:04:05Z"
+			is_kots_install_enabled    = true
 
 			entitlement_values = {
 				testEntitlement	= "test_value"
