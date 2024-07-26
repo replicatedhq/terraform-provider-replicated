@@ -218,7 +218,8 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 
 	channels := []kotsclient.CustomerChannel{
 		{
-			ID: data.ChannelId.ValueString(),
+			ID:        data.ChannelId.ValueString(),
+			IsDefault: true,
 		},
 	}
 	opts.Channels = channels
@@ -296,7 +297,8 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 	opts.AppID = updatedData.AppId.ValueString()
 	opts.Channels = []kotsclient.CustomerChannel{
 		{
-			ID: updatedData.ChannelId.ValueString(),
+			ID:        updatedData.ChannelId.ValueString(),
+			IsDefault: true,
 		},
 	}
 	opts.Email = updatedData.Email.ValueString()
