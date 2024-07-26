@@ -101,12 +101,6 @@ func (r *CustomerResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:            true,
 				Default:             booldefault.StaticBool(false),
 			},
-			"is_helmvm_download_enabled": schema.BoolAttribute{
-				MarkdownDescription: "Is helmvm download enabled for the customer license",
-				Optional:            true,
-				Computed:            true,
-				Default:             booldefault.StaticBool(false),
-			},
 			"is_identity_service_supported": schema.BoolAttribute{
 				MarkdownDescription: "Is identity service supported for the customer license",
 				Optional:            true,
